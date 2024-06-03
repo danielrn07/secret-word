@@ -1,9 +1,11 @@
 import { useState } from 'react'
+
 import Game from '../Game'
 import GameOver from '../GameOver'
 import Home from '../Home'
 
 import wordList from '../../data/words.json'
+import { capitalize } from '../../data/utils'
 
 const stages = [
   { id: 1, name: 'start' },
@@ -15,7 +17,26 @@ const App = () => {
   const [stage, setStage] = useState(stages[0].name)
   const [words] = useState(wordList)
 
+  const [pickedCategory, setPickedCategory] = useState('')
+  const [pickedWord, setPickedWord] = useState('')
+  const [letters, setLetters] = useState([])
+
+  const pickWordAndCategory = () => {
+    const categories = Object.keys(words)
+    const category = categories[Math.floor(Math.random() * Object.keys(categories).length)]
+    const word = words[category][Math.floor(Math.random() * words[category].length)]
+
+    return { word, category }
+  }
+
   const startGame = () => {
+    const { word, category } = pickWordAndCategory()
+    let wordLetters = capitalize(word).split('')
+    
+    setPickedCategory(category)
+    setPickedWord(word)
+    setLetters(wordLetters)
+
     setStage(stages[1].name)
   }
 

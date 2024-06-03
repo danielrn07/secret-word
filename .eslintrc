@@ -17,6 +17,7 @@
       }
     ],
     "react/react-in-jsx-scope": "off",
-    "comma-dangle": "off"
+    "comma-dangle": "off",
+    "import/no-extraneous-dependencies": ["error", {"devDependencies": false, "optionalDependencies": false, "peerDependencies": false, "dependencies": false}]
   }
 }

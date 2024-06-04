@@ -12,6 +12,7 @@ const stages = [
 
 const App = () => {
   const [stage, setStage] = useState(stages[0].name)
+  const [score, setScore] = useState(0)
   
   const startGame = () => {
     setStage(stages[1].name)
@@ -28,7 +29,7 @@ const App = () => {
   return (
     <>
       {stage === 'start' && <Home startGame={startGame} />}
-      {stage === 'game' && <Game endGame={endGame} />}
+      {stage === 'game' && <Game endGame={endGame} score={score} setScore={setScore} />}
       {stage === 'end' && <GameOver retry={retry} />}
     </>
   )

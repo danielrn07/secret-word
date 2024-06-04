@@ -14,7 +14,9 @@ import {
   WrongLettersContainer,
 } from './styles'
 
-const Game = ({ endGame }) => {
+const INITIAL_GUESSES = 5
+
+const Game = ({ endGame, score, setScore }) => {
   const [words] = useState(wordList)
   const [pickedCategory, setPickedCategory] = useState('')
   const [pickedWord, setPickedWord] = useState('')
@@ -22,8 +24,8 @@ const Game = ({ endGame }) => {
   const [letter, setLetter] = useState('')
   const [guessedLetters, setGuessedLetters] = useState([])
   const [wrongLetters, setWrongLetters] = useState([])
-  const [guesses, setGuesses] = useState(3)
-  const [score, setScore] = useState(0)
+  const [guesses, setGuesses] = useState(INITIAL_GUESSES)
+  const [newGame, setNewGame] = useState(false)
 
   const letterInputRef = useRef(null)
 
@@ -42,20 +44,43 @@ const Game = ({ endGame }) => {
     setPickedCategory(capitalize(category).replaceAll('_', ' '))
     setPickedWord(word)
     setLetters(wordLetters)
-  }, [])
+  }, [newGame])
 
   const verifyLetter = (letter) => {
-    const normalizedLetter = letter
-      .toLowerCase()
+    const normalizedLetter = letter.toLowerCase()
 
     if (guessedLetters.includes(normalizedLetter) || wrongLetters.includes(normalizedLetter)) return
 
     if (letters.includes(normalizedLetter)) {
-      setGuessedLetters((actualGuessedLetters) => [...actualGuessedLetters, normalizedLetter])
+      setGuessedLetters((prevGuessedLetters) => [...prevGuessedLetters, normalizedLetter])
     } else {
-      setWrongLetters((actualWrongLetters) => [...actualWrongLetters, normalizedLetter])
+      setWrongLetters((prevWrongLetters) => [...prevWrongLetters, normalizedLetter])
+      setGuesses((prevState) => prevState - 1)
     }
   }
+
+  const clearLetterStates = () => {
+    setGuessedLetters([])
+    setWrongLetters([])
+  }
+
+  useEffect(() => {
+    if (guesses <= 0) endGame()
+    clearLetterStates
+  }, [guesses])
+
+  useEffect(() => {
+    if (letters.length === 0) return
+
+    const uniqueLetters = [...new Set(letters)]
+
+    if (guessedLetters.length === uniqueLetters.length) {
+      setScore((prevState) => prevState + 50)
+      clearLetterStates()
+      setGuesses(INITIAL_GUESSES)
+      setNewGame((prevState) => !prevState)
+    }
+  }, [guessedLetters, letters])
 
   const handleSubmit = (e) => {
     e.preventDefault()

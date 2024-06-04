@@ -1,12 +1,13 @@
-import { Container, Subtitle, Title } from './styles'
+import { Subtitle, Title } from './styles'
+import '../../styles/index.css'
 
 function Home({ startGame }) {
   return (
-    <Container>
+    <div className='container'>
       <Title>Palavra Secreta</Title>
       <Subtitle>Clique no botão para iniciar um novo jogo</Subtitle>
       <button onClick={startGame}>Iniciar</button>
-    </Container>
+    </div>
   )
 }
 

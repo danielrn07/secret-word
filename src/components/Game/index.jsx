@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 
 import { capitalize } from '../../data/utils'
 import wordList from '../../data/words.json'
@@ -19,11 +19,13 @@ const Game = ({ endGame }) => {
   const [pickedCategory, setPickedCategory] = useState('')
   const [pickedWord, setPickedWord] = useState('')
   const [letters, setLetters] = useState([])
-
+  const [letter, setLetter] = useState('')
   const [guessedLetters, setGuessedLetters] = useState([])
   const [wrongLetters, setWrongLetters] = useState([])
   const [guesses, setGuesses] = useState(3)
   const [score, setScore] = useState(0)
+
+  const letterInputRef = useRef(null)
 
   const pickWordAndCategory = () => {
     const categories = Object.keys(words)
@@ -35,12 +37,34 @@ const Game = ({ endGame }) => {
 
   useEffect(() => {
     const { word, category } = pickWordAndCategory()
-    let wordLetters = capitalize(word).split('')
+    let wordLetters = word.split('')
 
     setPickedCategory(capitalize(category).replaceAll('_', ' '))
     setPickedWord(word)
     setLetters(wordLetters)
   }, [])
+
+  const verifyLetter = (letter) => {
+    const normalizedLetter = letter
+      .toLowerCase()
+
+    if (guessedLetters.includes(normalizedLetter) || wrongLetters.includes(normalizedLetter)) return
+
+    if (letters.includes(normalizedLetter)) {
+      setGuessedLetters((actualGuessedLetters) => [...actualGuessedLetters, normalizedLetter])
+    } else {
+      setWrongLetters((actualWrongLetters) => [...actualWrongLetters, normalizedLetter])
+    }
+  }
+
+  const handleSubmit = (e) => {
+    e.preventDefault()
+
+    verifyLetter(letter)
+
+    setLetter('')
+    letterInputRef.current.focus()
+  }
 
   return (
     <div className='container'>
@@ -60,9 +84,17 @@ const Game = ({ endGame }) => {
         </div>
         <LetterContainer>
           <p>Tente adivinhar uma letra da palavra:</p>
-          <form>
-            <input type='text' />
-            <button>Jogar</button>
+          <form onSubmit={handleSubmit}>
+            <input
+              ref={letterInputRef}
+              type='text'
+              pattern='[A-Za-záàâãéèêíïóôõöúçñÁÀÂÃÉÈÍÏÓÔÕÖÚÇÑ ]+$'
+              maxLength={1}
+              required
+              onChange={(e) => setLetter(e.target.value)}
+              value={letter}
+            />
+            <button type='submit'>Jogar</button>
           </form>
         </LetterContainer>
       </WordContainer>
@@ -70,9 +102,7 @@ const Game = ({ endGame }) => {
         <p>Letras já utilizadas</p>
         <div>
           {wrongLetters.map((letter, index) => (
-            <span key={index}>
-              {letter}
-            </span>
+            <span key={index}>{letter}</span>
           ))}
         </div>
       </WrongLettersContainer>

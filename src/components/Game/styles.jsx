@@ -26,10 +26,10 @@ export const WordContainer = styled.div`
 
   div {
     display: flex;
-  }
 
-  div p + p {
-    margin-left: -3px;
+    div + div {
+      margin-left: -3px;
+    }
   }
 `
 
@@ -42,10 +42,11 @@ export const Letter = styled.p`
   line-height: 0;
   font-size: 7rem;
   text-transform: uppercase;
-  background-color: rgb(255, 255, 255);
+  background-color: ${(props) => props.$backgroundColor || 'rgb(255, 255, 255)'};
   border: 3px solid rgb(0, 0, 0);
   color: rgb(0, 0, 0);
   font-weight: bold;
+  transition: background-color 0.5s ease-in;
 `
 
 export const BlankSquare = styled.p`
@@ -101,7 +102,7 @@ export const WrongLettersContainer = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 0.8rem;
+  justify-content: center;
   border-radius: 0.4rem;
 
   p {
@@ -110,6 +111,7 @@ export const WrongLettersContainer = styled.div`
 
   div {
     display: flex;
+    height: 2rem;
   }
 
   span {

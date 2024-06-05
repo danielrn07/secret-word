@@ -26,6 +26,7 @@ const Game = ({ endGame, score, setScore }) => {
   const [wrongLetters, setWrongLetters] = useState([])
   const [guesses, setGuesses] = useState(INITIAL_GUESSES)
   const [newGame, setNewGame] = useState(false)
+  const [rotatingIndices, setRotatingIndices] = useState([])
 
   const letterInputRef = useRef(null)
 
@@ -91,6 +92,21 @@ const Game = ({ endGame, score, setScore }) => {
     letterInputRef.current.focus()
   }
 
+  useEffect(() => {
+    const newRotatingIndices = letters.reduce((indices, letter, index) => {
+      if (guessedLetters.includes(letter)) {
+        indices.push(index)
+      }
+      return indices
+    }, [])
+
+    const rotatingTimer = setTimeout(() => {
+      setRotatingIndices(newRotatingIndices)
+    }, 1000)
+
+    return () => clearTimeout(rotatingTimer)
+  }, [letters, guessedLetters])
+
   return (
     <div className='container'>
       <Points>Pontuação: {score}</Points>
@@ -99,13 +115,19 @@ const Game = ({ endGame, score, setScore }) => {
         <h2>Dica: {pickedCategory}</h2>
         <span>Você ainda tem {guesses} tentativas</span>
         <div>
-          {letters.map((letter, index) =>
-            guessedLetters.includes(letter) ? (
-              <Letter key={index}>{letter}</Letter>
-            ) : (
-              <BlankSquare key={index} />
-            )
-          )}
+          {letters.map((letter, index) => (
+            <div key={index}>
+              {guessedLetters.includes(letter) ? (
+                rotatingIndices.includes(index) ? (
+                  <Letter>{letter}</Letter>
+                ) : (
+                  <Letter $backgroundColor='rgb(248, 211, 0)' />
+                )
+              ) : (
+                <BlankSquare />
+              )}
+            </div>
+          ))}
         </div>
         <LetterContainer>
           <p>Tente adivinhar uma letra da palavra:</p>
